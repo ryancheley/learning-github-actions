@@ -1,6 +1,6 @@
-name: learn-github-actions
+name: Action on edited Milestone
 
-run-name: ${{ github.actor }} is learning GitHub Actions
+run-name: ${{ github.actor }} edited a milestone
 
 on:
     milestone:

@@ -1,6 +1,6 @@
-name: learn-github-actions
+name: Action on deleted Milestone
 
-run-name: ${{ github.actor }} is learning GitHub Actions
+run-name: ${{ github.actor }} deleted a milestone
 
 on:
     milestone:

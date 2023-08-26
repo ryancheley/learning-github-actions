@@ -1,6 +1,6 @@
-name: learn-github-actions
+name: Action on closed Milestone
 
-run-name: ${{ github.actor }} is learning GitHub Actions
+run-name: ${{ github.actor }} closed a milestone
 
 on:
     milestone:
