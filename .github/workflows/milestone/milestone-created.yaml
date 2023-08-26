@@ -4,11 +4,11 @@ run-name: ${{ github.actor }} is learning GitHub Actions
 
 on:
     milestone:
-        types: [created, closed, opened, edited, deleted]
+        types: [created]
 
 jobs:
     milestone-workflow:
         runs-on: ubuntu-latest
         steps: 
             - name: Echo a message
-              run: echo "${{ github.actor }} is learning GitHub Actions"
+              run: echo "${{ github.actor }} created a milestone"
