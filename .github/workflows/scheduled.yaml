@@ -11,4 +11,4 @@ jobs:
         runs-on: ubuntu-latest
         steps: 
             - name: Create an issue
-              run: gh issue create -t 'This is a test '$(date +%Y%m%d)  -b 'This is the body of the issue' -m 'Here is a new milestone'
+              run: gh issue create -t 'This is a test '$(date +Y%m%d%H%M%S)  -b 'This is the body of the issue' -m 'Here is a new milestone'
