@@ -1,5 +1,5 @@
 ---
-title: Someone just pushed
+title: Weekly Radar {{ date | date('dddd, MMMM Do') }}
 assignees: ryancheley
 labels: enhancement
 ---
