@@ -3,13 +3,16 @@ name: Scheduled job
 run-name: ${{ github.actor }} scheduled a job
 
 on:
+    workflow_dispatch:
     schedule:
         - cron: '* 4 * * *'
 
 jobs:
-    milestone-workflow:
+    scheduled-workflow:                
         runs-on: ubuntu-latest
         steps: 
+            - name: Checkout
+              uses: actions/checkout@v3.6.0
             - name: Create an issue
               run: gh issue create -t 'This is a test '$(date +Y%m%d%H%M%S)  -b 'This is the body of the issue' -m 'Here is a new milestone'
         env:
