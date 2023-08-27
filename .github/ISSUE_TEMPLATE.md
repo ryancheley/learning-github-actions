@@ -1,6 +1,6 @@
 ---
 title: Someone just pushed
 assignees: ryancheley
-labels: bug, enhancement
+labels: enhancement
 ---
-Someone just pushed, oh no! Here's who did it: test.
+Someone just pushed, oh no! Here's who did it: {{ payload.sender.login }}.
