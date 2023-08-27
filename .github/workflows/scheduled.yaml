@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} scheduled a job
 
 on:
     schedule:
-        - cron: '*/1 * * * *'
+        - cron: '* 4 * * *'
 
 jobs:
     milestone-workflow:
