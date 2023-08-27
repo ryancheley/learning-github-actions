@@ -1,4 +1,4 @@
-name: Action on closed Milestone
+name: Scheduled job
 
 run-name: ${{ github.actor }} closed a milestone
 
