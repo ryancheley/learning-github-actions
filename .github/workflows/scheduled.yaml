@@ -1,21 +1,21 @@
-name: Scheduled job
-
-run-name: ${{ github.actor }} scheduled a job
-
+# .github/workflows/issue-on-push.yml
 on:
     workflow_dispatch:
     schedule:
-        - cron: '* 4 * * *'
-
+      - cron: '* 4 * * *'
+run-name: ${{ github.actor }} create an issue on scheduled a job
+name: Create an issue on push
+permissions:
+  contents: read
+  issues: write 
 jobs:
-    scheduled-workflow:                
-        runs-on: ubuntu-latest
-        steps: 
-            - name: Checkout
-              uses: actions/checkout@v3.6.0
-              with: 
-                  fetch-depth: 0
-            - name: Create an issue
-              run: gh issue create -t 'This is a test '$(date +Y%m%d%H%M%S)  -b 'This is the body of the issue' -m 'Here is a new milestone'
+  stuff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: JasonEtco/create-an-issue@v2
         env:
-            GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          name: Scheduled job
+
