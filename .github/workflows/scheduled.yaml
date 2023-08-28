@@ -2,7 +2,7 @@
 on:
     workflow_dispatch:
     schedule:
-      - cron: '* 4 * * *'
+      - cron: '13 4 * * *'
 run-name: ${{ github.actor }} create an issue on scheduled a job
 name: Create an issue on push
 permissions:
