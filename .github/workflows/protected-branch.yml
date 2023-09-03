@@ -1,0 +1,14 @@
+name: Branch Protection Rule
+
+run-name: ${{ github.actor }} changed Branch Protection Rule
+
+on:
+  branch_protection_rule:
+    types: [created, deleted, edited]
+
+jobs:
+    branch-protection-rule:
+        runs-on: ubuntu-latest
+        steps: 
+            - name: Echo a message
+              run: echo "${{ github.actor }} changed a branch protection rule"
