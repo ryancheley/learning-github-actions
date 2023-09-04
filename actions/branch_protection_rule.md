@@ -81,5 +81,5 @@ jobs:
       #     branch_name: ci
 ```
 
-Examples of the branch_protection_rule can be found [here]([url](https://github.com/search?q=%22branch_protection_rule%3A%22+%28path%3A*.yml+OR+path%3A*.yaml%29+path%3A%2F.github%2Fworkflows+language%3AYAML+&type=code)https://github.com/search?q=%22branch_protection_rule%3A%22+%28path%3A*.yml+OR+path%3A*.yaml%29+path%3A%2F.github%2Fworkflows+language%3AYAML+&type=code)
+Examples of the branch_protection_rule can be found [here](https://github.com/search?q=%22branch_protection_rule%3A%22+%28path%3A*.yml+OR+path%3A*.yaml%29+path%3A%2F.github%2Fworkflows+language%3AYAML+&type=code)
 
