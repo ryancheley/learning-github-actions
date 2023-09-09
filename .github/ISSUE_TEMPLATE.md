@@ -1,6 +1,6 @@
 ---
-title: Weekly Radar {{ date | date('dddd, MMMM Do') }}
+title: Automated issue created!
 assignees: ryancheley
 labels: enhancement
 ---
-Someone just pushed, oh no! Here's who did it: {{ payload.sender.login }}.
+An automated issue was created! Here's who did it: {{ payload.sender.login }}.
