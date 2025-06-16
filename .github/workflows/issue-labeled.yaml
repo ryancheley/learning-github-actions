@@ -11,4 +11,5 @@ jobs:
         runs-on: ubuntu-latest
         steps: 
             - name: Echo a message
-              run: echo "${{ github.actor }} added label '${{ github.event.label.name }}' to issue: ${{ github.event.issue.title }}"
+              run: |
+                echo "${{ github.actor }} added label '${{ github.event.label.name }}' to issue: ${{ github.event.issue.title }}"

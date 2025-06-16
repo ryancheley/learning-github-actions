@@ -11,4 +11,5 @@ jobs:
         runs-on: ubuntu-latest
         steps: 
             - name: Echo a message
-              run: echo "${{ github.actor }} opened an issue: ${{ github.event.issue.title }}"
+              run: |
+                echo "${{ github.actor }} opened an issue: ${{ github.event.issue.title }}"
