@@ -1,0 +1,14 @@
+name: Action on closed Issue
+
+run-name: ${{ github.actor }} closed an issue
+
+on:
+    issues:
+        types: [closed]
+
+jobs:
+    issue-workflow:
+        runs-on: ubuntu-latest
+        steps: 
+            - name: Echo a message
+              run: echo "${{ github.actor }} closed an issue: ${{ github.event.issue.title }}"

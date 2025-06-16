@@ -1,0 +1,14 @@
+name: Action on labeled Issue
+
+run-name: ${{ github.actor }} labeled an issue
+
+on:
+    issues:
+        types: [labeled]
+
+jobs:
+    issue-workflow:
+        runs-on: ubuntu-latest
+        steps: 
+            - name: Echo a message
+              run: echo "${{ github.actor }} added label '${{ github.event.label.name }}' to issue: ${{ github.event.issue.title }}"

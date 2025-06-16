@@ -1,0 +1,14 @@
+name: Action on opened Issue
+
+run-name: ${{ github.actor }} opened an issue
+
+on:
+    issues:
+        types: [opened]
+
+jobs:
+    issue-workflow:
+        runs-on: ubuntu-latest
+        steps: 
+            - name: Echo a message
+              run: echo "${{ github.actor }} opened an issue: ${{ github.event.issue.title }}"
