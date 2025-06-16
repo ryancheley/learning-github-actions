@@ -1,15 +1,108 @@
-name: Action on labeled Issue
+name: Team Routing and Notifications
 
-run-name: ${{ github.actor }} labeled an issue
+run-name: ${{ github.actor }} labeled an issue - routing to teams
 
 on:
     issues:
         types: [labeled]
 
+permissions:
+    issues: write
+
 jobs:
-    issue-workflow:
+    route-and-notify:
         runs-on: ubuntu-latest
-        steps: 
-            - name: Echo a message
-              run: |
-                echo "${{ github.actor }} added label '${{ github.event.label.name }}' to issue: ${{ github.event.issue.title }}"
+        steps:
+            - name: Route to appropriate team
+              uses: actions/github-script@v7
+              with:
+                script: |
+                  const issue = context.payload.issue;
+                  const labelName = context.payload.label.name.toLowerCase();
+                  
+                  let teamAssignments = {
+                    'security': '@security-team',
+                    'performance': '@performance-team', 
+                    'ui/ux': '@design-team',
+                    'api': '@backend-team',
+                    'frontend': '@frontend-team',
+                    'documentation': '@docs-team',
+                    'critical': '@on-call-team',
+                    'urgent': '@triage-team'
+                  };
+                  
+                  const assignedTeam = teamAssignments[labelName];
+                  
+                  if (assignedTeam) {
+                    await github.rest.issues.createComment({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: issue.number,
+                      body: `🏷️ **Issue routed to ${assignedTeam}**
+                      
+This issue has been labeled as "${context.payload.label.name}" and has been routed to the appropriate team.
+                      
+**Team:** ${assignedTeam}
+**Priority:** ${labelName.includes('critical') || labelName.includes('urgent') ? '🔴 High' : '🟡 Normal'}
+**Expected Response Time:** ${labelName.includes('critical') ? '2 hours' : labelName.includes('urgent') ? '1 business day' : '3 business days'}`
+                    });
+                  }
+
+            - name: Set SLA timers for priority labels
+              uses: actions/github-script@v7
+              with:
+                script: |
+                  const labelName = context.payload.label.name.toLowerCase();
+                  const issue = context.payload.issue;
+                  
+                  const slaInfo = {
+                    'critical': { hours: 2, emoji: '🚨' },
+                    'urgent': { hours: 24, emoji: '⚡' },
+                    'high': { hours: 72, emoji: '🔴' },
+                    'security': { hours: 4, emoji: '🔒' }
+                  };
+                  
+                  const sla = slaInfo[labelName];
+                  
+                  if (sla) {
+                    const dueDate = new Date();
+                    dueDate.setHours(dueDate.getHours() + sla.hours);
+                    
+                    await github.rest.issues.createComment({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: issue.number,
+                      body: `${sla.emoji} **SLA Timer Started**
+                      
+**Priority Level:** ${labelName.toUpperCase()}
+**Response Due:** ${dueDate.toLocaleString()}
+**SLA:** ${sla.hours} hours
+
+This issue requires attention within the specified timeframe. The team has been notified.`
+                    });
+                  }
+
+            - name: Trigger external integrations
+              uses: actions/github-script@v7
+              with:
+                script: |
+                  const labelName = context.payload.label.name.toLowerCase();
+                  const issue = context.payload.issue;
+                  
+                  // Simulate external integrations (replace with actual webhook calls)
+                  if (labelName === 'security') {
+                    console.log('🔔 Would send Slack notification to #security-alerts');
+                    console.log('🔔 Would create PagerDuty incident');
+                  }
+                  
+                  if (labelName === 'critical' || labelName === 'urgent') {
+                    console.log('🔔 Would send email to on-call team');
+                    console.log('🔔 Would update status page');
+                  }
+                  
+                  if (labelName === 'customer-reported') {
+                    console.log('🔔 Would sync with customer support system');
+                    console.log('🔔 Would notify account manager');
+                  }
+                  
+                  console.log(`Integration triggers processed for label: ${labelName}`);
