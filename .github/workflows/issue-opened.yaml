@@ -58,13 +58,6 @@ jobs:
                       owner: context.repo.owner,
                       repo: context.repo.repo,
                       issue_number: issue.number,
-                      body: `👋 Thanks for opening your first issue @${issue.user.login}! 
-
-We appreciate your contribution to the project. A maintainer will review this shortly.
-
-**Helpful resources:**
-- [Contributing Guidelines](../CONTRIBUTING.md)
-- [Code of Conduct](../CODE_OF_CONDUCT.md)
-- [Project Documentation](../README.md)`
+                      body: `👋 Thanks for opening your first issue @${issue.user.login}!\n\nWe appreciate your contribution to the project. A maintainer will review this shortly.\n\n**Helpful resources:**\n- [Contributing Guidelines](../CONTRIBUTING.md)\n- [Code of Conduct](../CODE_OF_CONDUCT.md)\n- [Project Documentation](../README.md)`
                     });
                   }
