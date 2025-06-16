@@ -59,7 +59,7 @@ jobs:
                       repo: context.repo.repo,
                       issue_number: issue.number,
                       body: `👋 Thanks for opening your first issue @${issue.user.login}! 
-                      
+
 We appreciate your contribution to the project. A maintainer will review this shortly.
 
 **Helpful resources:**
