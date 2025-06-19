@@ -44,7 +44,14 @@ jobs:
                   const closedAt = new Date(issue.closed_at);
                   const resolutionTimeHours = Math.round((closedAt - createdAt) / (1000 * 60 * 60));
                   
-                  const analyticsComment = `## 📊 Issue Analytics\n\n**Resolution Time:** ${resolutionTimeHours} hours\n**Issue Type:** ${issue.labels.map(l => l.name).join(', ') || 'Unlabeled'}\n**Closed by:** @${context.actor}\n**Created by:** @${issue.user.login}\n\n*This comment helps track project metrics and can be used for reporting.*`;
+                  const analyticsComment = `## 📊 Issue Analytics
+
+**Resolution Time:** ${resolutionTimeHours} hours
+**Issue Type:** ${issue.labels.map(l => l.name).join(', ') || 'Unlabeled'}
+**Closed by:** @${context.actor}
+**Created by:** @${issue.user.login}
+
+*This comment helps track project metrics and can be used for reporting.*`;
 
                   await github.rest.issues.createComment({
                     owner: context.repo.owner,
