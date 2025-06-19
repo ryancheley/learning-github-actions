@@ -93,10 +93,10 @@ ${content}`;
           else
             git commit -m "📚 Sync wiki changes to docs directory
 
-            Wiki pages updated:
-            $(echo '${{ toJson(github.event.pages) }}' | jq -r '.[].page_name' | sed 's/^/- /')
-            
-            🤖 Auto-synced from wiki via gollum trigger"
+Wiki pages updated:
+$(echo '${{ toJson(github.event.pages) }}' | jq -r '.[].page_name' | sed 's/^/- /')
+
+🤖 Auto-synced from wiki via gollum trigger"
             
             git push
           fi
