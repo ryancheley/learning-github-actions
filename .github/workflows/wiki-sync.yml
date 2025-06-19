@@ -40,12 +40,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "📚 Sync wiki changes to docs directory
-
-Wiki pages updated:
-$(echo '${{ toJson(github.event.pages) }}' | jq -r '.[].page_name' | sed 's/^/- /')
-
-🤖 Auto-synced from wiki via gollum trigger"
+            git commit -m "📚 Sync wiki changes to docs directory - 🤖 Auto-synced from wiki via gollum trigger"
             
             git push
           fi
