@@ -56,18 +56,14 @@ jobs:
             const newPages = pages.filter(p => p.action === 'created');
             
             for (const page of newPages) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: 1, // Replace with actual issue number for docs tracking
-                body: `📚 **New Wiki Page Created**
-                
-**Page:** [${page.title}](${page.html_url})
-**Author:** @${context.actor}
-**Created:** ${new Date().toISOString()}
-
-@docs-team please review and categorize this new documentation.`
-              });
+              console.log(`📧 Would notify documentation team about: ${page.title}`);
+              // In a real implementation, would create issue or send notification
+              // await github.rest.issues.create({
+              //   owner: context.repo.owner,
+              //   repo: context.repo.repo,
+              //   title: `New Wiki Page: ${page.title}`,
+              //   body: `📚 **New Wiki Page Created**\n\n**Page:** [${page.title}](${page.html_url})\n**Author:** @${context.actor}\n**Created:** ${new Date().toISOString()}\n\n@docs-team please review and categorize this new documentation.`
+              // });
             }
 
       - name: Auto-tag for review
@@ -140,7 +136,7 @@ jobs:
   handle-deletions:
     runs-on: ubuntu-latest
     needs: analyze-changes
-    if: needs.analyze-changes.outputs.change-type == 'edited' && contains(github.event.pages[0].title, 'deleted')
+    if: github.event.pages[0].action == 'deleted'
     steps:
       - name: Archive content
         uses: actions/github-script@v7
@@ -162,8 +158,8 @@ jobs:
 
   post-processing:
     runs-on: ubuntu-latest
-    needs: [analyze-changes, handle-new-pages, handle-critical-changes, handle-standard-changes, handle-deletions]
-    if: always()
+    needs: analyze-changes
+    if: always() && !cancelled()
     steps:
       - name: Collect analytics
         uses: actions/github-script@v7
