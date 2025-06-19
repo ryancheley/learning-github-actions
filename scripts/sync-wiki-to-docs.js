@@ -24,6 +24,7 @@ async function syncWikiToDocs() {
     }
 
     console.log(`Processing ${pages.length} wiki page(s)`);
+    console.log('Event data:', JSON.stringify(eventData, null, 2));
     
     // Initialize Octokit
     const octokit = new Octokit({ auth: token });
@@ -38,22 +39,35 @@ async function syncWikiToDocs() {
         console.log(`Attempting to fetch wiki content for: ${page.page_name}`);
         console.log(`HTML URL: ${page.html_url}`);
         
-        // Try to fetch the raw content using the wiki's API
+        // Try to fetch the raw content using different methods
         let content = '';
         try {
-          // First try: Get content from the .wiki repository
-          const wikiResponse = await octokit.rest.repos.getContent({
+          // Try using git API to get the blob content directly
+          const blobResponse = await octokit.rest.git.getBlob({
             owner: repository.owner.login,
             repo: `${repository.name}.wiki`,
-            path: `${page.page_name}.md`
+            file_sha: page.sha
           });
-          content = Buffer.from(wikiResponse.data.content, 'base64').toString('utf-8');
-        } catch (apiError) {
-          console.log(`API fetch failed: ${apiError.message}`);
-          console.log(`Trying alternative approaches...`);
+          content = Buffer.from(blobResponse.data.content, 'base64').toString('utf-8');
+          console.log('✅ Successfully fetched content using git blob API');
+        } catch (blobError) {
+          console.log(`Git blob fetch failed: ${blobError.message}`);
           
-          // Alternative: Create placeholder content with available info
-          content = `# ${page.title}
+          try {
+            // Fallback: Try repos.getContent
+            const wikiResponse = await octokit.rest.repos.getContent({
+              owner: repository.owner.login,
+              repo: `${repository.name}.wiki`,
+              path: `${page.page_name}.md`
+            });
+            content = Buffer.from(wikiResponse.data.content, 'base64').toString('utf-8');
+            console.log('✅ Successfully fetched content using repos API');
+          } catch (reposError) {
+            console.log(`Repos API fetch failed: ${reposError.message}`);
+            console.log(`Creating placeholder content...`);
+            
+            // Alternative: Create placeholder content with available info
+            content = `# ${page.title}
 
 > **Note**: This page was automatically synced from the wiki but the content could not be retrieved.
 
@@ -64,6 +78,7 @@ async function syncWikiToDocs() {
 - View on Wiki: [${page.title}](${page.html_url})
 
 *Please edit this page directly or update the wiki to add content.*`;
+          }
         }
         
         // Create the docs file path
