@@ -1,0 +1,11 @@
+name: Test Success
+
+on:
+  workflow_dispatch:
+
+jobs:
+  succeed-on-purpose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Intentionally succeed
+        run: echo "Success!"

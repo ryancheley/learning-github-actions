@@ -1,0 +1,11 @@
+name: Test Failure
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fail-on-purpose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Intentionally fail
+        run: exit 1
