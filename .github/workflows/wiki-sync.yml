@@ -1,0 +1,102 @@
+name: Wiki to Docs Sync
+
+run-name: ${{ github.actor }} updated wiki - syncing to docs directory
+
+on:
+  gollum:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-wiki-to-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync wiki pages to docs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Get the wiki pages that were modified
+            const pages = context.payload.pages;
+            console.log(`Processing ${pages.length} wiki page(s)`);
+            
+            for (const page of pages) {
+              console.log(`Processing page: ${page.page_name}`);
+              console.log(`Action: ${page.action}`);
+              console.log(`SHA: ${page.sha}`);
+              
+              try {
+                // Fetch the wiki page content
+                const wikiResponse = await github.rest.repos.getContent({
+                  owner: context.repo.owner,
+                  repo: `${context.repo.repo}.wiki`,
+                  path: `${page.page_name}.md`
+                });
+                
+                // Decode the content
+                const content = Buffer.from(wikiResponse.data.content, 'base64').toString('utf-8');
+                
+                // Create the docs file path
+                const docsPath = `docs/${page.page_name}.md`;
+                
+                // Ensure docs directory exists
+                const docsDir = path.dirname(docsPath);
+                if (!fs.existsSync(docsDir)) {
+                  fs.mkdirSync(docsDir, { recursive: true });
+                }
+                
+                // Add metadata header to the content
+                const syncedContent = `---
+title: ${page.title}
+wiki_page: ${page.page_name}
+last_updated: ${new Date().toISOString()}
+wiki_sha: ${page.sha}
+---
+
+${content}`;
+                
+                // Write the file
+                fs.writeFileSync(docsPath, syncedContent);
+                console.log(`Synced ${page.page_name} to ${docsPath}`);
+                
+              } catch (error) {
+                console.error(`Failed to sync ${page.page_name}:`, error.message);
+                
+                // If wiki page was deleted, remove the docs file
+                if (error.status === 404 && page.action === 'edited') {
+                  const docsPath = `docs/${page.page_name}.md`;
+                  if (fs.existsSync(docsPath)) {
+                    fs.unlinkSync(docsPath);
+                    console.log(`Removed deleted wiki page: ${docsPath}`);
+                  }
+                }
+              }
+            }
+
+      - name: Commit synced documentation
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          git add docs/
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "📚 Sync wiki changes to docs directory
+
+            Wiki pages updated:
+            $(echo '${{ toJson(github.event.pages) }}' | jq -r '.[].page_name' | sed 's/^/- /')
+            
+            🤖 Auto-synced from wiki via gollum trigger"
+            
+            git push
+          fi
