@@ -6,6 +6,16 @@ on:
   check_run:
     types: [created, completed, rerequested]
   workflow_dispatch:
+    inputs:
+      test_scenario:
+        description: 'Test scenario to simulate'
+        required: true
+        default: 'success'
+        type: choice
+        options:
+        - success
+        - failure
+        - monitor_only
 
 jobs:
   monitor-checks:
@@ -24,7 +34,7 @@ jobs:
 
   notify-on-failure:
     runs-on: ubuntu-latest
-    if: github.event.action == 'completed' && github.event.check_run.conclusion == 'failure'
+    if: (github.event.action == 'completed' && github.event.check_run.conclusion == 'failure') || (github.event_name == 'workflow_dispatch' && inputs.test_scenario == 'failure')
     steps:
       - name: Log failure
         run: |
@@ -34,7 +44,7 @@ jobs:
 
   celebrate-success:
     runs-on: ubuntu-latest
-    if: github.event.action == 'completed' && github.event.check_run.conclusion == 'success'
+    if: (github.event.action == 'completed' && github.event.check_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && inputs.test_scenario == 'success')
     steps:
       - name: Log success
         run: |
