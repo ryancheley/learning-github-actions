@@ -5,9 +5,9 @@ Learning what each of the workflow items does
 
 These are the current [workflow triggers](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows) that I'll be trying to figure out and have working examples of: 
 
-- [ ] [branch_protection_rule](https://github.com/ryancheley/learning-github-actions/issues/21)
-- [ ] [check_run](https://github.com/ryancheley/learning-github-actions/issues/22)
-- [ ] check_suite
+- [x] [branch_protection_rule](https://github.com/ryancheley/learning-github-actions/issues/21)
+- [x] [check_run](https://github.com/ryancheley/learning-github-actions/issues/22)
+- [x] [check_suite](https://github.com/ryancheley/learning-github-actions/issues/28)
 - [ ] create
 - [ ] delete
 - [ ] deployment
