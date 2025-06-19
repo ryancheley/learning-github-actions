@@ -15,7 +15,7 @@ These are the current [workflow triggers](https://docs.github.com/en/actions/usi
 - [ ] discussion
 - [ ] discussion_comment
 - [ ] fork
-- [ ] gollum
+- [x] [gollum](https://github.com/ryancheley/learning-github-actions/issues/35)
 - [ ] issue_comment
 - [ ] issues
 - [ ] label
