@@ -42,32 +42,57 @@ async function syncWikiToDocs() {
         // Try to fetch the raw content using different methods
         let content = '';
         try {
-          // Try using git API to get the blob content directly
-          const blobResponse = await octokit.rest.git.getBlob({
+          // Try using the dedicated Wiki API
+          console.log(`Trying Wiki API for page: ${page.page_name}`);
+          const wikiPageResponse = await octokit.rest.repos.getPages({
             owner: repository.owner.login,
-            repo: `${repository.name}.wiki`,
-            file_sha: page.sha
+            repo: repository.name
           });
-          content = Buffer.from(blobResponse.data.content, 'base64').toString('utf-8');
-          console.log('✅ Successfully fetched content using git blob API');
-        } catch (blobError) {
-          console.log(`Git blob fetch failed: ${blobError.message}`);
+          
+          // Find our specific page in the wiki pages list
+          const targetPage = wikiPageResponse.data.find(p => p.title === page.title);
+          if (targetPage) {
+            console.log('Found page in wiki API, fetching content...');
+            const pageContentResponse = await octokit.rest.repos.getPage({
+              owner: repository.owner.login,
+              repo: repository.name,
+              page_name: page.page_name
+            });
+            content = pageContentResponse.data.body;
+            console.log('✅ Successfully fetched content using Wiki API');
+          } else {
+            throw new Error('Page not found in wiki pages list');
+          }
+        } catch (wikiApiError) {
+          console.log(`Wiki API fetch failed: ${wikiApiError.message}`);
           
           try {
-            // Fallback: Try repos.getContent
-            const wikiResponse = await octokit.rest.repos.getContent({
+            // Try using git API to get the blob content directly
+            const blobResponse = await octokit.rest.git.getBlob({
               owner: repository.owner.login,
               repo: `${repository.name}.wiki`,
-              path: `${page.page_name}.md`
+              file_sha: page.sha
             });
-            content = Buffer.from(wikiResponse.data.content, 'base64').toString('utf-8');
-            console.log('✅ Successfully fetched content using repos API');
-          } catch (reposError) {
-            console.log(`Repos API fetch failed: ${reposError.message}`);
-            console.log(`Creating placeholder content...`);
+            content = Buffer.from(blobResponse.data.content, 'base64').toString('utf-8');
+            console.log('✅ Successfully fetched content using git blob API');
+          } catch (blobError) {
+            console.log(`Git blob fetch failed: ${blobError.message}`);
             
-            // Alternative: Create placeholder content with available info
-            content = `# ${page.title}
+            try {
+              // Fallback: Try repos.getContent
+              const wikiResponse = await octokit.rest.repos.getContent({
+                owner: repository.owner.login,
+                repo: `${repository.name}.wiki`,
+                path: `${page.page_name}.md`
+              });
+              content = Buffer.from(wikiResponse.data.content, 'base64').toString('utf-8');
+              console.log('✅ Successfully fetched content using repos API');
+            } catch (reposError) {
+              console.log(`Repos API fetch failed: ${reposError.message}`);
+              console.log(`Creating placeholder content...`);
+              
+              // Alternative: Create placeholder content with available info
+              content = `# ${page.title}
 
 > **Note**: This page was automatically synced from the wiki but the content could not be retrieved.
 
@@ -78,6 +103,7 @@ async function syncWikiToDocs() {
 - View on Wiki: [${page.title}](${page.html_url})
 
 *Please edit this page directly or update the wiki to add content.*`;
+            }
           }
         }
         
