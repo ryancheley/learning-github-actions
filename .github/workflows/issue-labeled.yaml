@@ -38,13 +38,7 @@ jobs:
                       owner: context.repo.owner,
                       repo: context.repo.repo,
                       issue_number: issue.number,
-                      body: `🏷️ **Issue routed to ${assignedTeam}**
-                      
-This issue has been labeled as "${context.payload.label.name}" and has been routed to the appropriate team.
-                      
-**Team:** ${assignedTeam}
-**Priority:** ${labelName.includes('critical') || labelName.includes('urgent') ? '🔴 High' : '🟡 Normal'}
-**Expected Response Time:** ${labelName.includes('critical') ? '2 hours' : labelName.includes('urgent') ? '1 business day' : '3 business days'}`
+                      body: `🏷️ **Issue routed to ${assignedTeam}**\n\nThis issue has been labeled as "${context.payload.label.name}" and has been routed to the appropriate team.\n\n**Team:** ${assignedTeam}\n**Priority:** ${labelName.includes('critical') || labelName.includes('urgent') ? '🔴 High' : '🟡 Normal'}\n**Expected Response Time:** ${labelName.includes('critical') ? '2 hours' : labelName.includes('urgent') ? '1 business day' : '3 business days'}`
                     });
                   }
 
@@ -72,13 +66,7 @@ This issue has been labeled as "${context.payload.label.name}" and has been rout
                       owner: context.repo.owner,
                       repo: context.repo.repo,
                       issue_number: issue.number,
-                      body: `${sla.emoji} **SLA Timer Started**
-                      
-**Priority Level:** ${labelName.toUpperCase()}
-**Response Due:** ${dueDate.toLocaleString()}
-**SLA:** ${sla.hours} hours
-
-This issue requires attention within the specified timeframe. The team has been notified.`
+                      body: `${sla.emoji} **SLA Timer Started**\n\n**Priority Level:** ${labelName.toUpperCase()}\n**Response Due:** ${dueDate.toLocaleString()}\n**SLA:** ${sla.hours} hours\n\nThis issue requires attention within the specified timeframe. The team has been notified.`
                     });
                   }
 
