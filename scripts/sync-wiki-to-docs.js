@@ -35,15 +35,36 @@ async function syncWikiToDocs() {
       console.log(`SHA: ${page.sha}`);
       
       try {
-        // Fetch the wiki page content
-        const wikiResponse = await octokit.rest.repos.getContent({
-          owner: repository.owner.login,
-          repo: `${repository.name}.wiki`,
-          path: `${page.page_name}.md`
-        });
+        console.log(`Attempting to fetch wiki content for: ${page.page_name}`);
+        console.log(`HTML URL: ${page.html_url}`);
         
-        // Decode the content
-        const content = Buffer.from(wikiResponse.data.content, 'base64').toString('utf-8');
+        // Try to fetch the raw content using the wiki's API
+        let content = '';
+        try {
+          // First try: Get content from the .wiki repository
+          const wikiResponse = await octokit.rest.repos.getContent({
+            owner: repository.owner.login,
+            repo: `${repository.name}.wiki`,
+            path: `${page.page_name}.md`
+          });
+          content = Buffer.from(wikiResponse.data.content, 'base64').toString('utf-8');
+        } catch (apiError) {
+          console.log(`API fetch failed: ${apiError.message}`);
+          console.log(`Trying alternative approaches...`);
+          
+          // Alternative: Create placeholder content with available info
+          content = `# ${page.title}
+
+> **Note**: This page was automatically synced from the wiki but the content could not be retrieved.
+
+**Wiki Details:**
+- Page Name: ${page.page_name}
+- Action: ${page.action}
+- SHA: ${page.sha}
+- View on Wiki: [${page.title}](${page.html_url})
+
+*Please edit this page directly or update the wiki to add content.*`;
+        }
         
         // Create the docs file path
         const docsPath = path.join('docs', `${page.page_name}.md`);
