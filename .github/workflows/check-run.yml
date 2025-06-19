@@ -5,6 +5,7 @@ run-name: ${{ github.actor }} triggered check run event - ${{ github.event.check
 on:
   check_run:
     types: [created, completed, rerequested]
+  workflow_dispatch:
 
 jobs:
   monitor-checks:
