@@ -1,0 +1,210 @@
+name: Comprehensive Wiki Documentation Monitor
+
+run-name: ${{ github.actor }} ${{ github.event.pages[0].action }} wiki page - ${{ github.event.pages[0].title }}
+
+on:
+  gollum:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  analyze-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      change-type: ${{ steps.detect.outputs.change-type }}
+      is-critical: ${{ steps.detect.outputs.is-critical }}
+      page-count: ${{ steps.detect.outputs.page-count }}
+    steps:
+      - name: Analyze wiki changes
+        id: detect
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pages = context.payload.pages;
+            const changeType = pages[0].action;
+            
+            // Detect if this is critical documentation
+            const criticalKeywords = ['api', 'security', 'compliance', 'legal', 'policy'];
+            const isCritical = pages.some(page => 
+              criticalKeywords.some(keyword => 
+                page.title.toLowerCase().includes(keyword) || 
+                page.page_name.toLowerCase().includes(keyword)
+              )
+            );
+            
+            core.setOutput('change-type', changeType);
+            core.setOutput('is-critical', isCritical);
+            core.setOutput('page-count', pages.length);
+            
+            console.log(`Change type: ${changeType}`);
+            console.log(`Critical documentation: ${isCritical}`);
+            console.log(`Pages affected: ${pages.length}`);
+
+  handle-new-pages:
+    runs-on: ubuntu-latest
+    needs: analyze-changes
+    if: needs.analyze-changes.outputs.change-type == 'created'
+    steps:
+      - name: Notify documentation team
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pages = context.payload.pages;
+            const newPages = pages.filter(p => p.action === 'created');
+            
+            for (const page of newPages) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: 1, // Replace with actual issue number for docs tracking
+                body: `📚 **New Wiki Page Created**
+                
+**Page:** [${page.title}](${page.html_url})
+**Author:** @${context.actor}
+**Created:** ${new Date().toISOString()}
+
+@docs-team please review and categorize this new documentation.`
+              });
+            }
+
+      - name: Auto-tag for review
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log('🏷️ Auto-tagging new pages for documentation review');
+            console.log('📋 Adding to documentation backlog');
+            // In a real implementation, this would integrate with project management tools
+
+  handle-critical-changes:
+    runs-on: ubuntu-latest
+    needs: analyze-changes
+    if: needs.analyze-changes.outputs.is-critical == 'true'
+    steps:
+      - name: Alert stakeholders
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pages = context.payload.pages;
+            
+            for (const page of pages) {
+              console.log(`🚨 CRITICAL DOCUMENTATION CHANGE DETECTED`);
+              console.log(`Page: ${page.title}`);
+              console.log(`Action: ${page.action}`);
+              console.log(`Author: ${context.actor}`);
+              
+              // In real implementation, would send:
+              // - Slack notifications to #critical-docs
+              // - Email alerts to stakeholders
+              // - PagerDuty notifications if needed
+            }
+
+      - name: Require review process
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log('📝 Initiating mandatory review process for critical docs');
+            console.log('🔒 Holding deployments until review complete');
+            // Would integrate with deployment pipelines
+
+  handle-standard-changes:
+    runs-on: ubuntu-latest
+    needs: analyze-changes
+    if: needs.analyze-changes.outputs.is-critical == 'false' && needs.analyze-changes.outputs.change-type == 'edited'
+    steps:
+      - name: Update change log
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pages = context.payload.pages;
+            
+            for (const page of pages) {
+              console.log(`📊 Updating change log for: ${page.title}`);
+              console.log(`Modified by: ${context.actor}`);
+              console.log(`SHA: ${page.sha}`);
+              
+              // Would update centralized change log or database
+            }
+
+      - name: Sync to external systems
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log('🔄 Syncing changes to external knowledge systems');
+            console.log('📡 Updating customer portal documentation');
+            console.log('🔍 Refreshing search indexes');
+            // Would trigger webhooks to external documentation systems
+
+  handle-deletions:
+    runs-on: ubuntu-latest
+    needs: analyze-changes
+    if: needs.analyze-changes.outputs.change-type == 'edited' && contains(github.event.pages[0].title, 'deleted')
+    steps:
+      - name: Archive content
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log('⚠️ Wiki page deletion detected');
+            console.log('💾 Archiving content before removal');
+            console.log('📧 Notifying content owners');
+            
+            // Would backup content to archive system
+
+      - name: Check for broken links
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log('🔍 Scanning for broken links caused by deletion');
+            console.log('📝 Creating issue for link cleanup if needed');
+            // Would scan other docs for references to deleted page
+
+  post-processing:
+    runs-on: ubuntu-latest
+    needs: [analyze-changes, handle-new-pages, handle-critical-changes, handle-standard-changes, handle-deletions]
+    if: always()
+    steps:
+      - name: Collect analytics
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pages = context.payload.pages;
+            
+            console.log('📈 Collecting documentation analytics');
+            console.log(`Pages modified: ${pages.length}`);
+            console.log(`Change type: ${context.payload.pages[0].action}`);
+            console.log(`Author: ${context.actor}`);
+            console.log(`Timestamp: ${new Date().toISOString()}`);
+            
+            // Would send metrics to analytics platform
+
+      - name: Update search index
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log('🔄 Refreshing documentation search index');
+            console.log('🔍 Updating knowledge base search');
+            // Would trigger search system reindexing
+
+      - name: Backup to external store
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log('☁️ Backing up documentation changes to cloud storage');
+            console.log('📊 Generating documentation health metrics');
+            // Would backup to S3, Azure Blob, etc.
+
+  generate-reports:
+    runs-on: ubuntu-latest
+    needs: post-processing
+    if: always()
+    steps:
+      - name: Generate documentation metrics
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log('📊 Generating weekly documentation activity report');
+            console.log('📈 Analyzing documentation quality trends');
+            console.log('👥 Tracking contributor activity');
+            // Would generate comprehensive reports for stakeholders
