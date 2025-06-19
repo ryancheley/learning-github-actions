@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const { Octokit } = require('@octokit/rest');
+import fs from 'fs';
+import path from 'path';
+import { Octokit } from '@octokit/rest';
 
 async function syncWikiToDocs() {
   try {
@@ -91,8 +91,8 @@ ${content}`;
 }
 
 // Run the sync if this file is executed directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   syncWikiToDocs();
 }
 
-module.exports = { syncWikiToDocs };
+export { syncWikiToDocs };

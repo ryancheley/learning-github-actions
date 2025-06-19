@@ -1,0 +1,12 @@
+{
+  "name": "learning-github-actions",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Learning GitHub Actions with practical examples",
+  "scripts": {
+    "sync-wiki": "node scripts/sync-wiki-to-docs.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.0"
+  }
+}

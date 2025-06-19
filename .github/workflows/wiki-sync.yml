@@ -23,7 +23,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install @octokit/rest
+        run: npm install
 
       - name: Sync wiki pages to docs
         env:
