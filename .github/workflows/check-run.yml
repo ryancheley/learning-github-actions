@@ -1,0 +1,41 @@
+name: Check Run Monitor
+
+run-name: ${{ github.actor }} triggered check run event - ${{ github.event.check_run.name }}
+
+on:
+  check_run:
+    types: [created, completed, rerequested]
+
+jobs:
+  monitor-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Display check run info
+        run: |
+          echo "Check Run Event Details:"
+          echo "Action: ${{ github.event.action }}"
+          echo "Check Name: ${{ github.event.check_run.name }}"
+          echo "Status: ${{ github.event.check_run.status }}"
+          echo "Conclusion: ${{ github.event.check_run.conclusion }}"
+          echo "Head SHA: ${{ github.event.check_run.head_sha }}"
+          echo "Started At: ${{ github.event.check_run.started_at }}"
+          echo "Completed At: ${{ github.event.check_run.completed_at }}"
+
+  notify-on-failure:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'completed' && github.event.check_run.conclusion == 'failure'
+    steps:
+      - name: Log failure
+        run: |
+          echo "❌ Check failed: ${{ github.event.check_run.name }}"
+          echo "Commit: ${{ github.event.check_run.head_sha }}"
+          echo "URL: ${{ github.event.check_run.html_url }}"
+
+  celebrate-success:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'completed' && github.event.check_run.conclusion == 'success'
+    steps:
+      - name: Log success
+        run: |
+          echo "✅ Check passed: ${{ github.event.check_run.name }}"
+          echo "Commit: ${{ github.event.check_run.head_sha }}"
