@@ -14,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Add triage label
-              uses: actions/github-script@v7.1.0
+              uses: actions/github-script@v9.0.0
               with:
                 script: |
                   const issue = context.payload.issue;
@@ -40,7 +40,7 @@ jobs:
                   });
 
             - name: Welcome first-time contributors
-              uses: actions/github-script@v7.1.0
+              uses: actions/github-script@v9.0.0
               with:
                 script: |
                   const issue = context.payload.issue;

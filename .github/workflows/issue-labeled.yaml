@@ -14,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Route to appropriate team
-              uses: actions/github-script@v7.1.0
+              uses: actions/github-script@v9.0.0
               with:
                 script: |
                   const issue = context.payload.issue;
@@ -43,7 +43,7 @@ jobs:
                   }
 
             - name: Set SLA timers for priority labels
-              uses: actions/github-script@v7.1.0
+              uses: actions/github-script@v9.0.0
               with:
                 script: |
                   const labelName = context.payload.label.name.toLowerCase();
@@ -71,7 +71,7 @@ jobs:
                   }
 
             - name: Trigger external integrations
-              uses: actions/github-script@v7.1.0
+              uses: actions/github-script@v9.0.0
               with:
                 script: |
                   const labelName = context.payload.label.name.toLowerCase();
