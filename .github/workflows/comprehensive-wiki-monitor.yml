@@ -5,10 +5,7 @@ run-name: ${{ github.actor }} ${{ github.event.pages[0].action }} wiki page - ${
 on:
   gollum:
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   analyze-changes:
@@ -20,7 +17,7 @@ jobs:
     steps:
       - name: Analyze wiki changes
         id: detect
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             const pages = context.payload.pages;
@@ -49,7 +46,7 @@ jobs:
     if: needs.analyze-changes.outputs.change-type == 'created'
     steps:
       - name: Notify documentation team
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             const pages = context.payload.pages;
@@ -67,7 +64,7 @@ jobs:
             }
 
       - name: Auto-tag for review
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             console.log('🏷️ Auto-tagging new pages for documentation review');
@@ -80,7 +77,7 @@ jobs:
     if: needs.analyze-changes.outputs.is-critical == 'true'
     steps:
       - name: Alert stakeholders
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             const pages = context.payload.pages;
@@ -98,7 +95,7 @@ jobs:
             }
 
       - name: Require review process
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             console.log('📝 Initiating mandatory review process for critical docs');
@@ -111,7 +108,7 @@ jobs:
     if: needs.analyze-changes.outputs.is-critical == 'false' && needs.analyze-changes.outputs.change-type == 'edited'
     steps:
       - name: Update change log
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             const pages = context.payload.pages;
@@ -125,7 +122,7 @@ jobs:
             }
 
       - name: Sync to external systems
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             console.log('🔄 Syncing changes to external knowledge systems');
@@ -139,7 +136,7 @@ jobs:
     if: github.event.pages[0].action == 'deleted'
     steps:
       - name: Archive content
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             console.log('⚠️ Wiki page deletion detected');
@@ -149,7 +146,7 @@ jobs:
             // Would backup content to archive system
 
       - name: Check for broken links
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             console.log('🔍 Scanning for broken links caused by deletion');
@@ -162,7 +159,7 @@ jobs:
     if: always() && !cancelled()
     steps:
       - name: Collect analytics
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             const pages = context.payload.pages;
@@ -176,7 +173,7 @@ jobs:
             // Would send metrics to analytics platform
 
       - name: Update search index
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             console.log('🔄 Refreshing documentation search index');
@@ -184,7 +181,7 @@ jobs:
             // Would trigger search system reindexing
 
       - name: Backup to external store
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             console.log('☁️ Backing up documentation changes to cloud storage');
@@ -197,7 +194,7 @@ jobs:
     if: always()
     steps:
       - name: Generate documentation metrics
-        uses: actions/github-script@v7
+        uses: actions/github-script@v7.1.0
         with:
           script: |
             console.log('📊 Generating weekly documentation activity report');

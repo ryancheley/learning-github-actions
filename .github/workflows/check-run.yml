@@ -17,36 +17,53 @@ on:
         - failure
         - monitor_only
 
+permissions: {}
+
 jobs:
   monitor-checks:
     runs-on: ubuntu-latest
     steps:
       - name: Display check run info
+        env:
+          ACTION: ${{ github.event.action }}
+          CHECK_NAME: ${{ github.event.check_run.name }}
+          STATUS: ${{ github.event.check_run.status }}
+          CONCLUSION: ${{ github.event.check_run.conclusion }}
+          HEAD_SHA: ${{ github.event.check_run.head_sha }}
+          STARTED_AT: ${{ github.event.check_run.started_at }}
+          COMPLETED_AT: ${{ github.event.check_run.completed_at }}
         run: |
           echo "Check Run Event Details:"
-          echo "Action: ${{ github.event.action }}"
-          echo "Check Name: ${{ github.event.check_run.name }}"
-          echo "Status: ${{ github.event.check_run.status }}"
-          echo "Conclusion: ${{ github.event.check_run.conclusion }}"
-          echo "Head SHA: ${{ github.event.check_run.head_sha }}"
-          echo "Started At: ${{ github.event.check_run.started_at }}"
-          echo "Completed At: ${{ github.event.check_run.completed_at }}"
+          echo "Action: $ACTION"
+          echo "Check Name: $CHECK_NAME"
+          echo "Status: $STATUS"
+          echo "Conclusion: $CONCLUSION"
+          echo "Head SHA: $HEAD_SHA"
+          echo "Started At: $STARTED_AT"
+          echo "Completed At: $COMPLETED_AT"
 
   notify-on-failure:
     runs-on: ubuntu-latest
     if: (github.event.action == 'completed' && github.event.check_run.conclusion == 'failure') || (github.event_name == 'workflow_dispatch' && inputs.test_scenario == 'failure')
     steps:
       - name: Log failure
+        env:
+          CHECK_NAME: ${{ github.event.check_run.name }}
+          HEAD_SHA: ${{ github.event.check_run.head_sha }}
+          CHECK_URL: ${{ github.event.check_run.html_url }}
         run: |
-          echo "❌ Check failed: ${{ github.event.check_run.name }}"
-          echo "Commit: ${{ github.event.check_run.head_sha }}"
-          echo "URL: ${{ github.event.check_run.html_url }}"
+          echo "❌ Check failed: $CHECK_NAME"
+          echo "Commit: $HEAD_SHA"
+          echo "URL: $CHECK_URL"
 
   celebrate-success:
     runs-on: ubuntu-latest
     if: (github.event.action == 'completed' && github.event.check_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && inputs.test_scenario == 'success')
     steps:
       - name: Log success
+        env:
+          CHECK_NAME: ${{ github.event.check_run.name }}
+          HEAD_SHA: ${{ github.event.check_run.head_sha }}
         run: |
-          echo "✅ Check passed: ${{ github.event.check_run.name }}"
-          echo "Commit: ${{ github.event.check_run.head_sha }}"
+          echo "✅ Check passed: $CHECK_NAME"
+          echo "Commit: $HEAD_SHA"

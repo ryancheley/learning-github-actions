@@ -3,6 +3,8 @@ name: Test Success
 on:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   succeed-on-purpose:
     runs-on: ubuntu-latest

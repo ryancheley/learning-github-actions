@@ -6,9 +6,13 @@ on:
     milestone:
         types: [deleted]
 
+permissions: {}
+
 jobs:
     milestone-workflow:
         runs-on: ubuntu-latest
         steps: 
             - name: Echo a message
-              run: echo "${{ github.actor }} deleted a milestone"
+              env:
+                  ACTOR: ${{ github.actor }}
+              run: echo "$ACTOR deleted a milestone"
