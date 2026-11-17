@@ -6,9 +6,13 @@ on:
     milestone:
         types: [created]
 
+permissions: {}
+
 jobs:
     milestone-workflow:
         runs-on: ubuntu-latest
         steps: 
             - name: Echo a message
-              run: echo "${{ github.actor }} created a milestone"
+              env:
+                  ACTOR: ${{ github.actor }}
+              run: echo "$ACTOR created a milestone"

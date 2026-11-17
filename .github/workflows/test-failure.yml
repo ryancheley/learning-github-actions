@@ -3,6 +3,8 @@ name: Test Failure
 on:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   fail-on-purpose:
     runs-on: ubuntu-latest

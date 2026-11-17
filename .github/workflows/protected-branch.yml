@@ -6,9 +6,13 @@ on:
   branch_protection_rule:
     types: [created, deleted, edited]
 
+permissions: {}
+
 jobs:
     branch-protection-rule:
         runs-on: ubuntu-latest
         steps: 
             - name: Echo a message
-              run: echo "${{ github.actor }} changed a branch protection rule"
+              env:
+                  ACTOR: ${{ github.actor }}
+              run: echo "$ACTOR changed a branch protection rule"
